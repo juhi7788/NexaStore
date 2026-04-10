@@ -1,0 +1,45 @@
+/* css/global.css */
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap');
+
+:root {
+  /* Core Colors */
+  --bg: #080810;
+  --nav-bg: rgba(8, 8, 16, 0.85);
+  --card-bg: #0e0e1a;
+  
+  /* Accents */
+  --accent: #e63f6f;
+  --accent-hover: #ff4a7f;
+  --check: #4dff91;
+  
+  /* Text */
+  --text: #f0f0f8;
+  --muted: #7070a0;
+  
+  /* UI Elements */
+  --border-light: rgba(255, 255, 255, 0.08);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Typography Base */
+h1, h2, h3, h4, h5 {
+  font-family: 'Syne', sans-serif;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}

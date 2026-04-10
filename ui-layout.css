@@ -1,0 +1,238 @@
+/* css/ui-layout.css */
+
+/* Navbar */
+header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 20px 48px;
+  background: linear-gradient(to bottom, rgba(8,8,16,0.95) 0%, transparent 100%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background 0.3s ease;
+}
+
+.logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.logo span { color: var(--accent); }
+
+/* Hero Section */
+.hero {
+  position: relative;
+  height: 90vh; /* Adjustment for scroll indicator */
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 48px;
+  background-size: cover;
+  background-position: center;
+  /* Ensure this image exists in your assets/posters/ folder */
+  background-image: url('../assets/posters/hero-bg.jpg'); 
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #080810 0%, rgba(8,8,16,0.5) 50%, transparent 100%),
+              linear-gradient(0deg, #080810 0%, transparent 30%);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 10;
+  max-width: 650px;
+}
+
+.hero-eyebrow { 
+  font-family: 'Syne', sans-serif; 
+  color: var(--accent); 
+  font-weight: 700; 
+  letter-spacing: 0.2em; 
+  text-transform: uppercase; 
+  font-size: 12px; 
+  margin-bottom: 16px; 
+}
+.hero-title { 
+  font-family: 'Syne', sans-serif; 
+  font-size: 64px; 
+  font-weight: 800; 
+  line-height: 1; 
+  letter-spacing: -0.03em; 
+  margin-bottom: 20px; 
+  text-shadow: 0 4px 20px rgba(0,0,0,0.5); 
+}
+.hero-desc { 
+  font-size: 18px; 
+  color: rgba(240,240,248,0.8); 
+  margin-bottom: 32px; 
+  line-height: 1.5; 
+}
+
+/* FIXED BUTTON ALIGNMENT CONTAINER */
+.hero-btns {
+  display: flex;
+  align-items: center; 
+  gap: 16px;
+}
+
+/* Base styling for buttons */
+.btn-primary, .btn-secondary {
+  height: 52px; 
+  padding: 0 32px;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* COLORED GLASS PRIMARY BUTTON */
+.btn-primary {
+  background: rgba(230, 63, 111, 0.7); 
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: white;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 15px rgba(230, 63, 111, 0.2);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  background: rgba(230, 63, 111, 0.9); 
+  box-shadow: 0 8px 25px rgba(230, 63, 111, 0.4);
+}
+
+/* Glass Secondary Button */
+.btn-secondary {
+  background: rgba(255,255,255,0.05);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.btn-secondary:hover {
+  background: rgba(255,255,255,0.15);
+  border-color: rgba(255,255,255,0.2);
+}
+
+/* GLASS SCROLL INDICATOR */
+.scroll-indicator {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.scroll-indicator span {
+  color: rgba(255,255,255,0.6);
+  font-family: 'Syne', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.scroll-icon {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-10px); }
+  60% { transform: translateY(-5px); }
+}
+
+/* Grid Layout for Products */
+.row-container {
+  padding: 80px 48px;
+  position: relative;
+}
+
+.row-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 32px;
+  letter-spacing: -0.01em;
+}
+
+.slider {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* =========================================
+   MOBILE RESPONSIVENESS FIX
+   ========================================= */
+@media (max-width: 768px) {
+  header {
+    padding: 16px 24px;
+  }
+  
+  .hero {
+    padding: 0 24px;
+  }
+  .hero-title {
+    font-size: 38px; /* Fixed big text issue */
+    line-height: 1.1;
+  }
+  .hero-desc {
+    font-size: 15px;
+    margin-bottom: 24px;
+  }
+  
+  .hero-btns {
+    flex-direction: column;
+    width: 100%;
+  }
+  .btn-primary, .btn-secondary {
+    width: 100%;
+  }
+  
+  .row-container {
+    padding: 60px 24px;
+  }
+}

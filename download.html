@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Download Your Files — NexaStore</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --accent: #32ff7e; /* Green accent for success */
+      --bg: #080810; 
+      --card: #12121e; 
+      --text: #fff; 
+      --border: rgba(255,255,255,0.05);
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    
+    body { 
+      background-color: var(--bg); 
+      color: var(--text); 
+      font-family: 'DM Sans', sans-serif; 
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-image: radial-gradient(circle at top, rgba(50, 255, 126, 0.05), transparent 50%);
+    }
+
+    header { 
+      width: 100%;
+      display: flex; justify-content: center; align-items: center; 
+      padding: 20px; border-bottom: 1px solid var(--border); background: rgba(8,8,16,0.8);
+      backdrop-filter: blur(10px);
+    }
+    .logo { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; }
+    .logo span { color: #e63f6f; }
+
+    .container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+    }
+
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      background: rgba(50, 255, 126, 0.1);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 20px;
+      border: 1px solid rgba(50, 255, 126, 0.2);
+      box-shadow: 0 0 30px rgba(50, 255, 126, 0.2);
+      animation: popIn 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    h1 { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; margin-bottom: 10px; }
+    p { color: #aaa; font-size: 15px; line-height: 1.6; margin-bottom: 30px; }
+
+    .download-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 25px;
+      width: 100%;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    }
+
+    .file-row {
+      display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border); padding: 15px; border-radius: 12px; margin-bottom: 15px;
+    }
+
+    .file-info { display: flex; align-items: center; gap: 15px; text-align: left; }
+    .file-icon { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; }
+    .file-name { font-weight: 700; font-size: 15px; margin-bottom: 3px; }
+    .file-size { font-size: 12px; color: #888; }
+
+    .download-btn {
+      background: var(--accent); color: #000; border: none; padding: 15px 20px; width: 100%; border-radius: 12px;
+      font-size: 16px; font-weight: 800; font-family: 'DM Sans', sans-serif; cursor: pointer; display: flex;
+      align-items: center; justify-content: center; gap: 10px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(50, 255, 126, 0.2);
+    }
+    .download-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(50, 255, 126, 0.4); }
+    .download-btn:active { transform: translateY(0); }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">Nexa<span>Store</span></div>
+  </header>
+
+  <div class="container">
+    <div class="success-icon" id="statusIcon"></div>
+    
+    <h1 id="dlStatusTitle">Verifying Access...</h1>
+    <p id="dlStatusDesc">Please wait while we confirm your payment status.</p>
+
+    <div class="download-card" id="dlCard" style="display: none;">
+      </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getDatabase, ref, onValue, get } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+
+    const db = getDatabase(initializeApp({
+      databaseURL: "https://nexastore-42d24-default-rtdb.firebaseio.com"
+    }));
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const orderId = urlParams.get('order');
+
+    if (orderId) {
+      onValue(ref(db, 'orders/' + orderId), async (snap) => {
+        const order = snap.val();
+        if (order && order.status === 'approved') {
+          document.getElementById('statusIcon').innerHTML = `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#32ff7e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`;
+          document.getElementById('dlStatusTitle').innerText = "Payment Successful!";
+          document.getElementById('dlStatusDesc').innerText = "Thank you for your purchase. Your files are ready to download.";
+          
+          const dlCard = document.getElementById('dlCard');
+          dlCard.style.display = "block";
+          dlCard.innerHTML = ""; // Purana box khali karega
+          
+          // 🔥 NAYA LOGIC: Sabhi products ke liye loop chalega 🔥
+          const productIds = order.productId.split(',');
+          
+          for(let id of productIds) {
+            const pSnap = await get(ref(db, 'products/' + id));
+            const p = pSnap.val();
+            if(p) {
+              dlCard.innerHTML += `
+                <div class="file-row">
+                  <div class="file-info">
+                    <div class="file-icon">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    </div>
+                    <div>
+                      <div class="file-name">${p.title}</div>
+                      <div class="file-size">Premium File · Ready</div>
+                    </div>
+                  </div>
+                </div>
+                <button class="download-btn" style="margin-bottom: 25px;" onclick="window.open('${p.downloadUrl}', '_blank')">
+                  Download ${p.title}
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+                </button>
+              `;
+            }
+          }
+          
+          // Clear cart so user can buy something else next time
+          localStorage.removeItem('nexaCart');
+        } else {
+          document.getElementById('dlStatusTitle').innerText = "Access Denied";
+          document.getElementById('dlStatusDesc').innerText = "Payment is not approved or invalid Order ID.";
+        }
+      });
+    } else {
+      document.getElementById('dlStatusTitle').innerText = "Invalid Request";
+      document.getElementById('dlStatusDesc').innerText = "No Order ID found in URL.";
+    }
+  </script>
+</body>
+</html>

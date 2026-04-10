@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Admin - NexaStore</title>
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body style="display: none;"> <header>
+    <h1>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="M8.5 14c1.5-1 3.5-1 5 0"></path><circle cx="12" cy="10" r="2"></circle></svg>
+      Nexa<span>Admin</span>
+    </h1>
+    <div class="header-actions">
+      <div class="status">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle></svg>
+        Live Sync
+      </div>
+      <button class="logout-btn" id="logoutBtn">Logout</button>
+    </div>
+  </header>
+
+  <div class="grid">
+    
+    <div class="left-col">
+      <div class="card">
+        <div class="card-header">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+          <h2 id="formTitle">Add / Edit Product</h2>
+        </div>
+        
+        <input type="hidden" id="p_id">
+        
+        <div class="input-group">
+          <label>Product Title</label>
+          <input type="text" id="p_title" placeholder="e.g. XSSNow Framework">
+        </div>
+        
+        <div class="input-row">
+          <div class="input-group" style="margin-bottom:0;">
+            <label>Price (₹)</label>
+            <input type="number" id="p_price" placeholder="0">
+          </div>
+          <div class="input-group" style="margin-bottom:0;">
+            <label>Category</label>
+            <input type="text" id="p_category" placeholder="e.g. Developer Tools">
+          </div>
+        </div>
+        
+        <div class="input-group">
+          <label>Description</label>
+          <textarea id="p_desc" rows="3" placeholder="Short description of the software..."></textarea>
+        </div>
+        
+        <div class="input-group">
+          <label>Poster Image URL</label>
+          <input type="text" id="p_poster" placeholder="https://...">
+        </div>
+        
+        <div class="input-group">
+          <label>Download Link (Secure URL)</label>
+          <input type="text" id="p_download" placeholder="Drive / Mega / Direct Link">
+        </div>
+        
+        <button class="btn" id="saveProductBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+          Save Product
+        </button>
+        <button class="btn" id="cancelEditBtn" style="background: rgba(255,255,255,0.05); color: #fff; margin-top: 12px; display: none; border: 1px solid var(--border); box-shadow: none;">Cancel Edit</button>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2" ry="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+          <h2>Payment Gateways</h2>
+        </div>
+        <div class="input-group"><label>Admin UPI ID</label><input type="text" id="pay_upi" placeholder="admin@upi"></div>
+        <div class="input-group"><label>PayPal ID</label><input type="text" id="pay_paypal" placeholder="admin@paypal"></div>
+        <div class="input-group"><label>Crypto Address (USDT TRC20)</label><input type="text" id="pay_crypto" placeholder="T..."></div>
+        <button class="btn" id="savePaymentsBtn" style="background: #32ff7e; color: #000; box-shadow: 0 4px 15px rgba(50, 255, 126, 0.2);">Update Gateways</button>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a29bfe" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+          <h2 style="color: #a29bfe;">Theme Settings</h2>
+        </div>
+        <div class="input-group">
+          <label>Store Hero Background (Image URL or Gradient)</label>
+          <input type="text" id="theme_heroBg" placeholder="https://... image link">
+        </div>
+        <button class="btn" id="saveThemeBtn" style="background: #a29bfe; color: #000; box-shadow: 0 4px 15px rgba(162, 155, 254, 0.2);">Update Theme</button>
+      </div>
+    </div>
+
+    <div class="right-col">
+      <div class="card utr-card">
+        <div class="card-header">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f39c12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          <h2 style="color: #f39c12;">Pending Approvals</h2>
+        </div>
+        <div id="ordersList" class="list-container">
+          <p style="color:var(--text-muted); font-size: 14px;">No pending requests.</p>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-header">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+          <h2>Live Catalog</h2>
+        </div>
+        <div id="productsList" class="list-container"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module" src="js/admin.js"></script>
+</body>
+</html>

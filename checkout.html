@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Checkout — NexaStore</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <style>
+    /* 🔥 1. TUMHARA ORIGINAL COLOR THEME 🔥 */
+    :root {
+      --accent: #e63f6f; 
+      --bg: #080810; 
+      --card: #12121e; 
+      --text: #fff; 
+      --border: rgba(255,255,255,0.05);
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    
+    body { background-color: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; overflow: hidden; height: 100vh; height: 100dvh; display: flex; flex-direction: column; }
+    header { flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--border); background: var(--bg); }
+    .logo { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; }
+    .logo span { color: var(--accent); }
+    .back-link { color: #aaa; text-decoration: none; font-size: 13px; font-weight: 500; }
+
+    .checkout-container { flex: 1; display: flex; flex-direction: column; padding: 20px; max-width: 600px; width: 100%; margin: 0 auto; overflow: hidden; }
+    .cart-title { flex-shrink: 0; font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; margin-bottom: 15px; text-transform: uppercase; }
+    .cart-list { flex: 1; overflow-y: auto; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 15px; min-height: 0; padding-right: 5px; }
+    .cart-list::-webkit-scrollbar { display: none; }
+    .cart-list { -ms-overflow-style: none; scrollbar-width: none; }
+    .total-row { flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .total-label { color: #aaa; font-size: 15px; }
+    .total-amount { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; color: #fff; }
+
+    /* GLOW EFFECT */
+    .payment-card, .cart-list > div, .custom-modal-content { 
+      background: var(--card); border-radius: 16px; position: relative;
+      transform: translateZ(0); overflow: hidden;
+    }
+    .payment-card { flex-shrink: 0; padding: 20px 15px; box-shadow: 0 1rem 2rem -1rem black; }
+    .payment-card::before, .cart-list > div::before, .custom-modal-content::before {
+      content: ""; position: absolute; inset: 0; border-radius: inherit;
+      background: radial-gradient(300px circle at var(--x, 50%) var(--y, 50%), rgba(230, 63, 111, 0.15), transparent 100%);
+      opacity: 0; transition: opacity 0.3s ease; pointer-events: none; z-index: 0;
+    }
+    .payment-card::after, .cart-list > div::after, .custom-modal-content::after {
+      content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px;
+      background: radial-gradient(200px circle at var(--x, 50%) var(--y, 50%), rgba(230, 63, 111, 1), rgba(255, 255, 255, 0.05));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude;
+      opacity: 0; transition: opacity 0.3s ease; pointer-events: none; z-index: 0;
+    }
+    .payment-card:hover::before, .payment-card:hover::after,
+    .cart-list > div:hover::before, .cart-list > div:hover::after,
+    .custom-modal-content:hover::before, .custom-modal-content:hover::after { opacity: 1; }
+    .payment-card > *, .cart-list > div > *, .custom-modal-content > * { position: relative; z-index: 1; }
+
+    /* BENTO BUTTONS */
+    .payment-eyebrow { color: var(--accent); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; }
+    .payment-eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--border); margin-left: 15px; }
+    .payment-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 15px; line-height: 1.2; text-transform: uppercase; }
+    .bento-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    .bento-btn { position: relative; padding: 12px 16px; border-radius: 12px; background-color: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); cursor: pointer; text-align: left; display: flex; flex-direction: column; gap: 8px; color: white; font-family: 'DM Sans', sans-serif; transition: transform 0.3s, background-color 0.3s; z-index: 10; }
+    .bento-btn:hover { transform: translateY(-3px); background-color: rgba(255,255,255,0.04); }
+    .bento-header { display: flex; justify-content: space-between; align-items: center; }
+    .bento-icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.08); }
+    .bento-badge { font-size: 10px; font-weight: 500; padding: 4px 8px; border-radius: 6px; background: rgba(255,255,255,0.05); color: #aaa; }
+    .bento-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; color: #fff; margin-bottom: 2px; }
+    .bento-desc { font-size: 12px; color: #888; }
+    .icon-crypto { color: #e67e22; } .icon-upi { color: #32ff7e; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 11px; } .icon-paypal { color: #3498db; font-weight: 800; font-style: italic; font-size: 14px; }
+    .ssl-text { text-align: center; color: #555; font-size: 10px; margin-top: 15px; }
+
+    /* MODALS & FIX FOR MOBILE SCROLLING */
+    .custom-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; padding: 20px; }
+    .custom-modal-overlay.open { opacity: 1; pointer-events: auto; }
+    
+    .custom-modal-content { 
+      background: #151520; border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; 
+      width: 100%; max-width: 360px; padding: 30px 20px; text-align: center; 
+      transform: scale(0.95); opacity: 0; transition: all 0.3s; 
+      max-height: 85vh; overflow-y: auto; scrollbar-width: none; 
+    }
+    .custom-modal-content::-webkit-scrollbar { display: none; }
+    
+    .custom-modal-overlay.open .custom-modal-content { transform: scale(1); opacity: 1; }
+    .modal-close-btn { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.05); border: none; color: white; width: 30px; height: 30px; border-radius: 50%; font-size: 18px; cursor: pointer; z-index: 10; }
+
+    /* WAITING BUTTON */
+    .rainbow-wrapper { display: flex; justify-content: center; align-items: center; margin: 30px 0 20px 0; }
+    .rainbow-btn { position: relative; width: 140px; height: 40px; display: flex; align-items: center; justify-content: center; background: black; border-radius: 12px; color: white; font-weight: 900; font-size: 14px; cursor: pointer; border: none; }
+    .rainbow-btn::before, .rainbow-btn::after { content: ''; position: absolute; inset: -2px; border-radius: 14px; background: linear-gradient(45deg, #fb0094, #0000ff, #00ff00, #ffff00, #ff0000, #fb0094, #0000ff, #00ff00, #ffff00, #ff0000); background-size: 400%; z-index: -1; animation: rainbow-anim 20s linear infinite; }
+    .rainbow-btn::after { filter: blur(30px); }
+    @keyframes rainbow-anim { 0% { background-position: 0 0; } 50% { background-position: 400% 0; } 100% { background-position: 0 0; } }
+
+    /* SHINY GET LINK BUTTON */
+    .shiny-wrap { position: relative; margin: 30px auto; width: 120px; height: 60px; display: flex; justify-content: center; }
+    .shiny-wrap:hover .shiny-outer, .shiny-wrap:hover .shiny-mid, .shiny-wrap:hover .shiny-inner { opacity: 0.75; }
+    .shiny-wrap:active .shiny-outer, .shiny-wrap:active .shiny-mid, .shiny-wrap:active .shiny-inner { opacity: 1; }
+    .shiny-action { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 20; opacity: 0; cursor: pointer; }
+    .shiny-layer { position: absolute; overflow: hidden; transition: opacity 0.3s; pointer-events: none; }
+    .shiny-bg { position: absolute; inset: -150%; animation: speen 8s cubic-bezier(0.56,0.15,0.28,0.86) infinite, woah 4s infinite; }
+    .shiny-outer { inset: 0; z-index: -20; opacity: 0.5; filter: blur(2em) url(#unopaq); }
+    .shiny-outer .shiny-bg { background: linear-gradient(90deg, #f50 30%, transparent 50%, #05f 70%); }
+    .shiny-mid { inset: -0.125em; z-index: -20; opacity: 0.5; border-radius: 0.75em; filter: blur(0.25em) url(#unopaq2); }
+    .shiny-mid .shiny-bg { background: linear-gradient(90deg, #f95 20%, transparent 45%, transparent 55%, #59f 80%); }
+    .shiny-border { padding: 0.5px; background: rgba(0,0,0,0.3); border-radius: 17px; width: 100%; height: 100%; position: relative; clip-path: path("M 90 0 C 121 0 126 5 126 33 C 126 61 121 66 90 66 L 33 66 C 5 66 0 61 0 33 C 0 5 5 0 33 0 Z"); }
+    .shiny-inner { inset: -2px; z-index: -10; opacity: 0.5; filter: blur(2px) url(#unopaq3); border-radius: inherit; }
+    .shiny-inner .shiny-bg { background: linear-gradient(90deg, #fc9 30%, transparent 45%, transparent 55%, #9cf 70%); }
+    .shiny-surface { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; background: #111215; color: white; font-weight: bold; font-family: 'DM Sans', sans-serif; clip-path: path("M 90 0 C 115 0 120 5 120 30 C 120 55 115 60 90 60 L 30 60 C 5 60 0 55 0 30 C 0 5 5 0 30 0 Z"); border-radius: 0.875em; }
+    @keyframes speen { 0% { transform: rotate(10deg); } 50% { transform: rotate(190deg); } 100% { transform: rotate(370deg); } }
+    @keyframes woah { 0%, 100% { transform: scale(1); } 50% { transform: scale(0.75); } }
+  </style>
+</head>
+<body>
+  <svg style="position: absolute; width: 0; height: 0;">
+    <filter width="300%" x="-100%" height="300%" y="-100%" id="unopaq"><feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 9 0" /></filter>
+    <filter width="300%" x="-100%" height="300%" y="-100%" id="unopaq2"><feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 3 0" /></filter>
+    <filter width="300%" x="-100%" height="300%" y="-100%" id="unopaq3"><feColorMatrix values="1 0 0 0.2 0 0 1 0 0.2 0 0 0 1 0.2 0 0 0 0 2 0" /></filter>
+  </svg>
+
+  <header>
+    <div class="logo">Nexa<span>Store</span></div>
+    <a href="index.html" class="back-link">← Continue Shopping</a>
+  </header>
+
+  <div class="checkout-container">
+    <h1 class="cart-title">Your Cart</h1>
+    <div id="checkoutCartList" class="cart-list"></div>
+    <div class="total-row"><span>Total to pay</span><span id="checkoutTotalAmount" class="total-amount">₹0</span></div>
+
+    <div class="payment-card" id="glowCard">
+      <div class="payment-eyebrow">Checkout via NexaPay</div>
+      <h2 class="payment-title">Select Payment</h2>
+
+      <div class="bento-grid">
+        <button class="bento-btn" onclick="openCryptoModal()">
+          <div class="bento-header">
+            <div class="bento-icon icon-crypto"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 18V6"></path></svg></div>
+            <span class="bento-badge">Global</span>
+          </div>
+          <div><div class="bento-title">Pay with Crypto</div><div class="bento-desc">Secure, decentralized transfer</div></div>
+        </button>
+
+        <button class="bento-btn" onclick="openUpiModal()">
+          <div class="bento-header">
+            <div class="bento-icon icon-upi">UPI</div>
+            <span class="bento-badge">India Only</span>
+          </div>
+          <div><div class="bento-title">Pay via UPI</div><div class="bento-desc">Zero fees fast transfer</div></div>
+        </button>
+
+        <button class="bento-btn">
+          <div class="bento-header">
+            <div class="bento-icon icon-paypal">P</div>
+            <span class="bento-badge">International</span>
+          </div>
+          <div><div class="bento-title">Pay with PayPal</div><div class="bento-desc">Buyer protection included</div></div>
+        </button>
+      </div>
+      <div class="ssl-text">🔒 256-bit SSL · End-to-end encrypted</div>
+    </div>
+  </div>
+
+  <div id="upiModal" class="custom-modal-overlay">
+    <div class="custom-modal-content" id="upiModalContent">
+      <button class="modal-close-btn" onclick="closeUpiModal()">×</button>
+      
+      <div id="qrView">
+        <h2 style="font-family: 'Syne', sans-serif; font-size: 22px; margin-bottom: 20px;">Scan & Pay</h2>
+        
+        <div style="background: white; padding: 15px; border-radius: 16px; display: inline-block; margin-bottom: 15px;">
+          <img id="upiQrImage" src="" alt="UPI QR Code" style="width: 180px; height: 180px; object-fit: contain; display: block;">
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+          <p style="color: #aaa; font-size: 13px; margin-bottom: 2px;">Amount to Pay:</p>
+          <h3 id="upiExactAmount" style="color: #32ff7e; font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800;">₹0</h3>
+        </div>
+        
+        <p style="color: #888; font-size: 13px; margin-bottom: 8px;">Or pay directly to this UPI ID:</p>
+        <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.05); padding: 12px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px;">
+          <span id="upiIdText" style="font-family: monospace; font-size: 15px; color: #fff;">Loading...</span>
+          <button id="copyUpiBtn" onclick="copyUpiId()" style="background: var(--accent); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer;">Copy</button>
+        </div>
+        
+        <button onclick="payWithApp()" style="width: 100%; background: #32ff7e; color: #000; border: none; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 800; cursor: pointer; font-family: 'DM Sans', sans-serif; display: flex; justify-content: center; align-items: center; gap: 8px; margin-bottom: 15px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          Pay via Payment App
+        </button>
+
+        <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 12px; text-align: left;">
+          <p style="font-size: 12px; color: #aaa; margin-bottom: 8px;">Completed the payment? Enter 12-digit UTR:</p>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="utrInput" placeholder="Enter Ref. No." style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: rgba(0,0,0,0.5); color: white; outline: none;">
+            <button onclick="submitUtr()" style="background: var(--accent); color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; cursor: pointer;">Verify</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="statusView" style="display: none; padding: 10px 0;">
+         <div id="statusContent"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="cryptoModal" class="custom-modal-overlay">
+    <div class="custom-modal-content" id="cryptoModalContent">
+      <button class="modal-close-btn" onclick="closeCryptoModal()">×</button>
+      
+      <div id="cryptoQrView">
+        <h2 style="font-family: 'Syne', sans-serif; font-size: 22px; margin-bottom: 20px;">Crypto Transfer</h2>
+        
+        <div style="background: white; padding: 15px; border-radius: 16px; display: inline-block; margin-bottom: 15px;">
+          <img id="cryptoQrImage" src="" alt="Crypto QR Code" style="width: 180px; height: 180px; object-fit: contain; display: block;">
+        </div>
+        
+        <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.05); padding: 12px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 10px;">
+          <div style="text-align: left;">
+            <p style="font-size: 11px; color: #aaa; margin-bottom: 3px;">Exact Amount (USD)</p>
+            <span id="cryptoExactAmount" style="font-family: 'Syne', sans-serif; font-size: 18px; color: #32ff7e; font-weight: bold;">$0.00</span>
+          </div>
+          <button onclick="copyCryptoAmount()" id="copyCryptoAmtBtn" style="background: #3498db; color: white; border: none; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer;">Copy</button>
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.05); padding: 12px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px;">
+          <div style="text-align: left; overflow: hidden; padding-right: 10px;">
+            <p style="font-size: 11px; color: #aaa; margin-bottom: 3px;">Network: <span style="color:#fff; font-weight:bold;">USDT (TRC20)</span></p>
+            <span id="cryptoIdText" style="font-family: monospace; font-size: 12px; color: #fff; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Loading...</span>
+          </div>
+          <button onclick="copyCryptoId()" id="copyCryptoBtn" style="background: #e67e22; color: white; border: none; padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer;">Copy</button>
+        </div>
+
+        <button onclick="alert('Please open your Binance, Trust Wallet, or any Crypto Exchange App to paste the copied Address & Amount.')" style="width: 100%; background: #3498db; color: #fff; border: none; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 800; cursor: pointer; font-family: 'DM Sans', sans-serif; display: flex; justify-content: center; align-items: center; gap: 8px; margin-bottom: 15px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path></svg>
+          Open Wallet App
+        </button>
+
+        <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 12px; text-align: left;">
+          <p style="font-size: 12px; color: #aaa; margin-bottom: 8px;">Payment Done? Enter TX Hash:</p>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="cryptoHashInput" placeholder="Enter Transaction Hash" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: rgba(0,0,0,0.5); color: white; outline: none; font-size: 12px;">
+            <button onclick="submitCryptoHash()" style="background: #e67e22; color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; cursor: pointer;">Verify</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="cryptoStatusView" style="display: none; padding: 10px 0;">
+         <div id="cryptoStatusContent"></div>
+      </div>
+    </div>
+  </div>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAyknjeM9e8lvwBeogJvAly4834VpdoHiI",
+      authDomain: "nexastore-42d24.firebaseapp.com",
+      databaseURL: "https://nexastore-42d24-default-rtdb.firebaseio.com",
+      projectId: "nexastore-42d24",
+      storageBucket: "nexastore-42d24.firebasestorage.app",
+      messagingSenderId: "671073555026",
+      appId: "1:671073555026:web:d28e98db87f6070308058b"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+  </script>
+
+  <script src="js/cart.js"></script>
+
+  <script>
+    // GLOW EFFECT LOGIC
+    function handleGlow(e) {
+      if (!this.ticking) {
+        window.requestAnimationFrame(() => {
+          const rect = this.getBoundingClientRect();
+          const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+          const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+          this.style.setProperty('--x', `${clientX - rect.left}px`);
+          this.style.setProperty('--y', `${clientY - rect.top}px`);
+          this.ticking = false;
+        });
+        this.ticking = true;
+      }
+    }
+
+    document.getElementById('glowCard')?.addEventListener('mousemove', handleGlow);
+    document.getElementById('glowCard')?.addEventListener('touchmove', handleGlow, { passive: true });
+    
+    document.getElementById('upiModalContent')?.addEventListener('mousemove', handleGlow);
+    document.getElementById('upiModalContent')?.addEventListener('touchmove', handleGlow, { passive: true });
+
+    document.getElementById('cryptoModalContent')?.addEventListener('mousemove', handleGlow);
+    document.getElementById('cryptoModalContent')?.addEventListener('touchmove', handleGlow, { passive: true });
+
+    const cartList = document.getElementById('checkoutCartList');
+    if (cartList) {
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach(m => m.addedNodes.forEach(n => {
+          if (n.nodeType === 1) { 
+            n.addEventListener('mousemove', handleGlow);
+            n.addEventListener('touchmove', handleGlow, { passive: true });
+          }
+        }));
+      });
+      observer.observe(cartList, { childList: true });
+    }
+
+    // 🔥 UPI LOGIC 🔥
+    let currentAdminUpi = "nexastore@upi"; 
+    db.ref('settings/payment/upi').on('value', (snapshot) => {
+      if(snapshot.exists() && snapshot.val() !== "") { currentAdminUpi = snapshot.val(); }
+      document.getElementById('upiIdText').innerText = currentAdminUpi;
+      document.getElementById('upiQrImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=${currentAdminUpi}&pn=NexaStore`;
+    });
+
+    function openUpiModal() {
+      document.getElementById('upiExactAmount').innerText = document.getElementById('checkoutTotalAmount').innerText;
+      document.getElementById('upiModal').classList.add('open');
+      document.getElementById('qrView').style.display = 'block';
+      document.getElementById('statusView').style.display = 'none';
+      document.getElementById('utrInput').value = '';
+    }
+
+    function closeUpiModal() { document.getElementById('upiModal').classList.remove('open'); }
+
+    function copyUpiId() {
+      navigator.clipboard.writeText(currentAdminUpi).then(() => {
+        const btn = document.getElementById('copyUpiBtn');
+        btn.innerText = 'Copied!'; btn.style.background = '#32ff7e'; btn.style.color = '#000';
+        setTimeout(() => { btn.innerText = 'Copy'; btn.style.background = 'var(--accent)'; btn.style.color = '#fff'; }, 2000);
+      });
+    }
+
+    function payWithApp() {
+      const amount = document.getElementById('checkoutTotalAmount').innerText.replace('₹', '').replace(/,/g, '').trim();
+      if (!amount || amount === "0") { alert("Cart is empty!"); return; }
+      window.location.href = `upi://pay?pa=${currentAdminUpi}&pn=NexaStore&am=${amount}&cu=INR`;
+    }
+
+    function submitUtr() {
+      const utr = document.getElementById('utrInput').value.trim();
+      if(!utr || utr.length < 6) { alert("Please enter a valid UTR Number!"); return; }
+      processPayment(utr, 'UPI', document.getElementById('checkoutTotalAmount').innerText, 'qrView', 'statusView', 'statusContent');
+    }
+
+
+    // 🔥 CRYPTO LOGIC 🔥
+    let currentAdminCrypto = "Loading..."; 
+    let currentUsdAmountStr = "0.00";
+
+    db.ref('settings/payment/crypto').on('value', (snapshot) => {
+      if(snapshot.exists() && snapshot.val() !== "") { currentAdminCrypto = snapshot.val(); }
+      document.getElementById('cryptoIdText').innerText = currentAdminCrypto;
+      document.getElementById('cryptoQrImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${currentAdminCrypto}`;
+    });
+
+    function openCryptoModal() {
+      const inrStr = document.getElementById('checkoutTotalAmount').innerText.replace('₹', '').replace(/,/g, '').trim();
+      const inrAmount = parseFloat(inrStr) || 0;
+      currentUsdAmountStr = (inrAmount / 85).toFixed(2); 
+      
+      document.getElementById('cryptoExactAmount').innerText = '$' + currentUsdAmountStr;
+      
+      document.getElementById('cryptoModal').classList.add('open');
+      document.getElementById('cryptoQrView').style.display = 'block';
+      document.getElementById('cryptoStatusView').style.display = 'none';
+      document.getElementById('cryptoHashInput').value = '';
+    }
+
+    function closeCryptoModal() { document.getElementById('cryptoModal').classList.remove('open'); }
+
+    function copyCryptoAmount() {
+      navigator.clipboard.writeText(currentUsdAmountStr).then(() => {
+        const btn = document.getElementById('copyCryptoAmtBtn');
+        btn.innerText = 'Copied!'; btn.style.background = '#2ecc71'; 
+        setTimeout(() => { btn.innerText = 'Copy'; btn.style.background = '#3498db'; }, 2000);
+      });
+    }
+
+    function copyCryptoId() {
+      navigator.clipboard.writeText(currentAdminCrypto).then(() => {
+        const btn = document.getElementById('copyCryptoBtn');
+        btn.innerText = 'Copied!'; btn.style.background = '#2ecc71'; 
+        setTimeout(() => { btn.innerText = 'Copy'; btn.style.background = '#e67e22'; }, 2000);
+      });
+    }
+
+    function submitCryptoHash() {
+      const txHash = document.getElementById('cryptoHashInput').value.trim();
+      if(!txHash || txHash.length < 10) { alert("Please enter a valid Transaction Hash!"); return; }
+      processPayment(txHash, 'Crypto USDT TRC20', '$' + currentUsdAmountStr, 'cryptoQrView', 'cryptoStatusView', 'cryptoStatusContent');
+    }
+
+    // 🔥 COMMON PAYMENT PROCESSOR (FIXED FOR MULTIPLE PRODUCTS) 🔥
+    function processPayment(refId, methodStr, displayAmount, viewId, statusViewId, contentId) {
+      const cartData = JSON.parse(localStorage.getItem('nexaCart')) || [];
+      if (cartData.length === 0) { alert("Cart is empty!"); return; }
+      
+      // 🔥 NAYA LOGIC: Cart ke saare products ka ID aur Naam ek sath jod rahe hain 🔥
+      const allProductIds = cartData.map(item => item.id).join(',');
+      const allProductNames = cartData.map(item => item.title).join(' + ');
+      
+      const orderId = 'ORD_' + Date.now();
+      
+      db.ref('orders/' + orderId).set({
+        orderId: orderId, utr: refId, amount: displayAmount, status: 'pending', 
+        productId: allProductIds, productName: allProductNames, time: new Date().toLocaleString(), method: methodStr
+      }).then(() => {
+        document.getElementById(viewId).style.display = 'none';
+        document.getElementById(statusViewId).style.display = 'block';
+        
+        document.getElementById(contentId).innerHTML = `
+          <div class="rainbow-wrapper"><button class="rainbow-btn">Waiting for approval...</button></div>
+          <p style="color: #aaa; font-size: 13px; margin-top: 20px;">Your transaction is being verified by the admin.</p>
+        `;
+        
+        db.ref('orders/' + orderId + '/status').on('value', (snap) => {
+          if(snap.val() === 'approved') {
+            document.getElementById(contentId).innerHTML = `
+              <h3 style="color: #32ff7e; font-family: 'Syne', sans-serif; font-size: 22px; margin-bottom: 20px;">Approved!</h3>
+              <div class="shiny-wrap">
+                <button class="shiny-action" onclick="window.location.href='download.html?order=${orderId}'"></button>
+                <div class="shiny-layer shiny-outer"><div class="shiny-bg"></div></div>
+                <div class="shiny-layer shiny-mid"><div class="shiny-bg"></div></div>
+                <div class="shiny-border">
+                  <div class="shiny-layer shiny-inner"><div class="shiny-bg"></div></div>
+                  <div class="shiny-surface">Get Link</div>
+                </div>
+              </div>`;
+          } else if (snap.val() === 'rejected') {
+            document.getElementById(contentId).innerHTML = `
+              <h3 style="color: #e74c3c; margin-bottom: 10px; font-family: 'Syne', sans-serif;">Payment Rejected</h3>
+              <p style="color: #aaa; font-size: 13px; margin-bottom: 20px;">Invalid reference or payment not received.</p>
+              <button onclick="location.reload()" style="background: rgba(255,255,255,0.1); color: white; border: none; padding: 12px 20px; border-radius: 12px; cursor: pointer; font-weight: bold;">Try Again</button>
+            `;
+          }
+        });
+      });
+    }
