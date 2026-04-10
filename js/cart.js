@@ -1,5 +1,28 @@
 // js/cart.js
 
+// 🔥 CUSTOM PREMIUM TOAST NOTIFICATION 🔥
+window.toast = function(message) {
+  let container = document.getElementById('toast-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toast-container';
+    document.body.appendChild(container);
+  }
+  
+  const toastEl = document.createElement('div');
+  toastEl.className = 'custom-toast';
+  toastEl.innerText = message;
+  container.appendChild(toastEl);
+  
+  // 2.5 second baad apne aap smoothly gayab ho jayega
+  setTimeout(() => {
+    toastEl.classList.add('toast-out');
+    setTimeout(() => {
+      if (toastEl.parentNode) toastEl.parentNode.removeChild(toastEl);
+    }, 300);
+  }, 2500); 
+};
+
 let cart = JSON.parse(localStorage.getItem('nexaCart')) || [];
 
 // CART SAVE KARTA HAI
@@ -21,24 +44,21 @@ function addToCart(id) {
 
   const exists = cart.find(i => i.id === id);
   if(exists) {
-    if(typeof toast === 'function') toast('Already in cart!');
-    else alert('Already in cart!');
+    toast('⚠️ Already in cart!'); // 🔥 Sasta Alert replaced 🔥
     return;
   }
 
   cart.push(item);
   saveCart();
-  if(typeof toast === 'function') toast('🛒 Added to Cart');
-  else alert('Added to Cart!');
+  toast('🛒 Added to Cart'); // 🔥 Sasta Alert replaced 🔥
   closeModal();
 }
 
-// 🔥 NAYA FUNCTION: CART SE ITEM REMOVE KARTA HAI 🔥
+// CART SE ITEM REMOVE KARTA HAI
 window.removeFromCart = function(id) {
-  // Us ID wale item ko chhod kar baaki sab rakh lo
   cart = cart.filter(item => item.id !== id);
-  saveCart(); // Naya cart save karo
-  renderCheckout(); // Checkout page ko refresh karo (Amount wagarah update hoga)
+  saveCart(); 
+  renderCheckout(); 
 };
 
 // CHECKOUT PAGE LOAD HONE PAR
@@ -72,7 +92,6 @@ function renderCheckout() {
     total += Number(item.price);
     const posterImg = item.poster || 'https://via.placeholder.com/100x100?text=Image';
     
-    // HTML mein Remove Button Add Kiya
     cartList.innerHTML += `
       <div class="cart-item" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
         
@@ -108,7 +127,33 @@ function setupLivePayments() {
     const payUpiBtn = document.getElementById('payUpiBtn');
     if(payUpiBtn && settings.upi) {
       payUpiBtn.onclick = () => {
-        // Hamesha current cart ka total nikalo
+        let currentTotal = cart.reduce((sum, item) => sum + Number(item.price), 0);
+        if(currentTotal === 0) return toast("Cart is empty!");
+        const upiLink = `upi://pay?pa=${settings.upi}&pn=${settings.name || 'NexaStore'}&am=${currentTotal}&cu=INR`;
+        window.location.href = upiLink;
+      };
+    }
+
+    const payPayPalBtn = document.getElementById('payPayPalBtn');
+    if(payPayPalBtn && settings.paypal) {
+      payPayPalBtn.onclick = () => {
+        let currentTotal = cart.reduce((sum, item) => sum + Number(item.price), 0);
+        if(currentTotal === 0) return toast("Cart is empty!");
+        const totalUSD = (currentTotal / 83).toFixed(2);
+        window.open(`https://paypal.me/${settings.paypal}/${totalUSD}`, '_blank');
+      };
+    }
+
+    const payCryptoBtn = document.getElementById('payCryptoBtn');
+    if(payCryptoBtn && settings.crypto) {
+      payCryptoBtn.onclick = () => {
+        let currentTotal = cart.reduce((sum, item) => sum + Number(item.price), 0);
+        if(currentTotal === 0) return toast("Cart is empty!");
+        window.location.href = settings.crypto;
+      };
+    }
+  });
+}
         let currentTotal = cart.reduce((sum, item) => sum + Number(item.price), 0);
         if(currentTotal === 0) return alert("Cart is empty!");
         const upiLink = `upi://pay?pa=${settings.upi}&pn=${settings.name || 'NexaStore'}&am=${currentTotal}&cu=INR`;
