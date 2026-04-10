@@ -133,3 +133,89 @@ header {
   0% { opacity: 1; transform: translateY(0) scale(1); }
   100% { opacity: 0; transform: translateY(15px) scale(0.9); }
 }
+/* 🔥 HERO CONTACT ANIMATED BUTTON 🔥 */
+.hero-contact-anim-btn {
+  --highlight-hue: 343deg; /* NexaStore Red Color */
+  --padding: 4px;
+  --radius: 12px; 
+  --transition: 0.4s;
+  --highlight: hsl(var(--highlight-hue), 100%, 70%);
+  --highlight-50: hsla(var(--highlight-hue), 100%, 70%, 0.5);
+  --highlight-30: hsla(var(--highlight-hue), 100%, 70%, 0.3);
+  --highlight-20: hsla(var(--highlight-hue), 100%, 70%, 0.2);
+  --highlight-80: hsla(var(--highlight-hue), 100%, 70%, 0.8);
+  --ui-anim-svg-fill: #e8e8e8;
+
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  border-radius: var(--radius);
+  padding: 15px 30px; /* Purane button ka same size */
+  background-color: #080810;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.2);
+  box-shadow: inset 0px 1px 1px rgba(255,255,255,0.2), inset 0px 2px 2px rgba(255,255,255,0.15), inset 0px 4px 4px rgba(255,255,255,0.1), inset 0px 8px 8px rgba(255,255,255,0.05), inset 0px 16px 16px rgba(255,255,255,0.05), 0 -1px 1px rgba(0,0,0,0.02), 0 -2px 2px rgba(0,0,0,0.03), 0 -4px 4px rgba(0,0,0,0.05), 0 -8px 8px rgba(0,0,0,0.06), 0 -16px 16px rgba(0,0,0,0.08);
+  transition: box-shadow var(--transition), border var(--transition), background-color var(--transition);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  width: 100%;
+}
+
+.hero-contact-anim-btn::before {
+  content: "";
+  position: absolute;
+  top: calc(0px - var(--padding));
+  left: calc(0px - var(--padding));
+  width: calc(100% + var(--padding) * 2);
+  height: calc(100% + var(--padding) * 2);
+  border-radius: calc(var(--radius) + var(--padding));
+  pointer-events: none;
+  background-image: linear-gradient(0deg, rgba(0,0,0,0.26), rgba(0,0,0,0.66));
+  z-index: -1;
+  transition: box-shadow var(--transition), filter var(--transition);
+  box-shadow: 0 -8px 8px -6px rgba(0,0,0,0) inset, 0 -16px 16px -8px rgba(0,0,0,0) inset, 1px 1px 1px rgba(255,255,255,0.13), 2px 2px 2px rgba(255,255,255,0.06), -1px -1px 1px rgba(0,0,0,0.13), -2px -2px 2px rgba(0,0,0,0.06);
+}
+
+.hero-contact-anim-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background-image: linear-gradient(0deg, #fff, var(--highlight), var(--highlight-50), 8%, transparent);
+  opacity: 0;
+  transition: opacity var(--transition), filter var(--transition);
+}
+
+.hero-anim-svg {
+  margin-right: 8px;
+  width: 20px;
+  height: 20px;
+  fill: var(--ui-anim-svg-fill);
+  filter: drop-shadow(0 0 2px rgba(255,255,255,0.6));
+  animation: ui-flicker 2s linear infinite;
+  animation-delay: 0.5s;
+}
+
+.anim-letter {
+  color: rgba(255,255,255,0.5);
+  animation: ui-letter-anim 2s ease-in-out infinite;
+  display: inline-block;
+}
+
+@keyframes ui-letter-anim {
+  50% { text-shadow: 0 0 3px rgba(255,255,255,0.5); color: #fff; }
+}
+@keyframes ui-flicker {
+  50% { opacity: 0.3; }
+}
+
+.hero-contact-anim-btn:hover { border-color: hsla(var(--highlight-hue), 100%, 80%, 0.4); }
+.hero-contact-anim-btn:hover::before { box-shadow: 0 -8px 8px -6px rgba(255,255,255,0.6) inset, 0 -16px 16px -8px var(--highlight-30) inset, 1px 1px 1px rgba(255,255,255,0.13), 2px 2px 2px rgba(255,255,255,0.06), -1px -1px 1px rgba(0,0,0,0.13), -2px -2px 2px rgba(0,0,0,0.06); }
+.hero-contact-anim-btn:hover::after { opacity: 1; }
+.hero-contact-anim-btn:hover .hero-anim-svg { fill: #fff; filter: drop-shadow(0 0 3px var(--highlight)) drop-shadow(0 -4px 6px rgba(0,0,0,0.6)); animation: none; }
+
