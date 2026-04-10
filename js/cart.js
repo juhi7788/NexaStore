@@ -154,30 +154,3 @@ function setupLivePayments() {
     }
   });
 }
-        let currentTotal = cart.reduce((sum, item) => sum + Number(item.price), 0);
-        if(currentTotal === 0) return alert("Cart is empty!");
-        const upiLink = `upi://pay?pa=${settings.upi}&pn=${settings.name || 'NexaStore'}&am=${currentTotal}&cu=INR`;
-        window.location.href = upiLink;
-      };
-    }
-
-    const payPayPalBtn = document.getElementById('payPayPalBtn');
-    if(payPayPalBtn && settings.paypal) {
-      payPayPalBtn.onclick = () => {
-        let currentTotal = cart.reduce((sum, item) => sum + Number(item.price), 0);
-        if(currentTotal === 0) return alert("Cart is empty!");
-        const totalUSD = (currentTotal / 83).toFixed(2);
-        window.open(`https://paypal.me/${settings.paypal}/${totalUSD}`, '_blank');
-      };
-    }
-
-    const payCryptoBtn = document.getElementById('payCryptoBtn');
-    if(payCryptoBtn && settings.crypto) {
-      payCryptoBtn.onclick = () => {
-        let currentTotal = cart.reduce((sum, item) => sum + Number(item.price), 0);
-        if(currentTotal === 0) return alert("Cart is empty!");
-        window.location.href = settings.crypto;
-      };
-    }
-  });
-}
