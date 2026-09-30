@@ -6,8 +6,8 @@ const softwares = [
     title: "XSSNow Scanner Framework",
     price: 10,
     category: "Security",
-    desc: "The ultimate automated pipeline for discovering Cross-Site Scripting vulnerabilities. Built for speed, precision, and zero false positives.",
-    poster: "assets/posters/poster1.jpg",
+    desc: "Grow Your Tiktok Account.",
+    poster: "https://kommodo.ai/i/tlT3dtUCz6MlaxUdxonL",
     trailer: "assets/trailers/xssnow-vid.mp4",
     driveLink: "https://drive.google.com/file/d/YOUR_FILE_ID_1/view"
   },
